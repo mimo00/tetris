@@ -101,6 +101,22 @@ class IBlock(Block):
         super().__init__(points, center, color)
 
 
+class TetrisBlockFactory:
+    def create(self) -> Block:
+        raise NotImplementedError
+
+
+class ClassicTetrisBlockFactory(TetrisBlockFactory):
+    def create(self) -> Block:
+        shape = random.randint(0, 2)
+        if shape == 0:
+            return TBlock()
+        elif shape == 1:
+            return SBlock()
+        elif shape == 2:
+            return IBlock()
+
+
 class GUI:
     def __init__(self, cell_size=20, rows=16, columns=8):
         self.cell_size = cell_size
@@ -135,10 +151,11 @@ class GUI:
 
 
 class TetrisApp(object):
-    def __init__(self, rows=16, columns=10, board_color=BLACK):
+    def __init__(self, rows=16, columns=10, board_color=BLACK, block_factory=ClassicTetrisBlockFactory()):
         self.rows = rows #number of X
         self.columns = columns #number of Y
         self.board_color = board_color
+        self.block_factory = block_factory
         self.gameover = False
         self.paused = False
         self.board: Board = self.new_board()
@@ -150,14 +167,7 @@ class TetrisApp(object):
 
     def new_block(self):
         start_point = Vector(-2, self.columns//2)
-        shape = random.randint(0, 2)
-        block = TBlock()
-        if shape == 0:
-            block = TBlock()
-        elif shape == 1:
-            block = SBlock()
-        elif shape == 2:
-            block = IBlock()
+        block = self.block_factory.create()
         block = block.get_moved(start_point)
         if self.is_colliding(block):
             self.check_game_over()
