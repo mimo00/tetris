@@ -1,153 +1,11 @@
-import random
-from dataclasses import dataclass
-from typing import List, Dict, Tuple
-
 import pygame
 import sys
 
+from tetris_design_patterns.core import R_CLOCKWISE, BLACK, Vector, DOWN, RIGHT, LEFT, Board, Block
+from tetris_design_patterns.factory.classic_factory import ClassicTetrisBlockFactory
+from tetris_design_patterns.gui import GUI
+
 DROP_EVENT_ID = pygame.USEREVENT + 1
-
-R_CLOCKWISE = ([0, 1], [-1, 0])
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-PURPLE = (218,112,214)
-
-
-@dataclass
-class Vector:
-    x: int
-    y: int
-
-    def __sub__(self, other):
-        return Vector(self.x - other.x, self.y - other.y)
-
-    def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y)
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, Vector):
-            return self.x == o.x and self.y == o.y
-        return False
-
-    def get_rotated(self, r, pivot):
-        point = self - pivot
-        point = self.transform(r, point)
-        point = pivot + point
-        return point
-
-    def get_moved(self, point):
-        return Vector(self.x + point.x, self.y + point.y)
-
-    @staticmethod
-    def transform(r, point):
-        x = r[0][0] * point.x + r[0][1] * point.y
-        y = r[1][0] * point.x + r[1][1] * point.y
-        return Vector(x, y)
-
-
-DOWN = Vector(1, 0)
-RIGHT = Vector(0, 1)
-LEFT = Vector(0, -1)
-
-Color = Tuple[int, int, int]
-Shape = Dict[Vector, Color]
-Board = List[List[Color]]
-
-
-class Block:
-    def __init__(self, points, center, color):
-        self.points: List[Vector] = points
-        self.center: Vector = center
-        self.color: Color = color
-
-    def get_rotated(self, r=R_CLOCKWISE):
-        points = []
-        for point in self.points:
-            points.append(point.get_rotated(r, self.center))
-        return Block(points, self.center, self.color)
-
-    def get_moved(self, point):
-        points = []
-        for p in self.points:
-            points.append(p.get_moved(point))
-        return Block(points, self.center.get_moved(point), self.color)
-
-
-class TBlock(Block):
-    def __init__(self, color=PURPLE):
-        points = [Vector(0, 0), Vector(0, 1), Vector(0, 2), Vector(1, 1)]
-        center = Vector(1, 1)
-        super().__init__(points, center, color)
-
-
-class SBlock(Block):
-    def __init__(self, color=RED):
-        points = [Vector(0, 0), Vector(0, 1), Vector(-1, 1), Vector(-1, 2)]
-        center = Vector(0, 1)
-        super().__init__(points, center, color)
-
-
-class IBlock(Block):
-    def __init__(self, color=GREEN):
-        points = [Vector(0, 0), Vector(1, 0), Vector(2, 0), Vector(3, 0)]
-        center = Vector(1, 1)
-        super().__init__(points, center, color)
-
-
-class TetrisBlockFactory:
-    def create(self) -> Block:
-        raise NotImplementedError
-
-
-class ClassicTetrisBlockFactory(TetrisBlockFactory):
-    def create(self) -> Block:
-        shape = random.randint(0, 2)
-        if shape == 0:
-            return TBlock()
-        elif shape == 1:
-            return SBlock()
-        elif shape == 2:
-            return IBlock()
-
-
-class GUI:
-    def __init__(self, cell_size=20, rows=16, columns=8):
-        self.cell_size = cell_size
-        self.width = cell_size*columns
-        self.height = cell_size*rows
-        pygame.init()
-        self.screen = pygame.display.set_mode((self.width, self.height))
-
-    def center_msg(self, msg):
-        for i, line in enumerate(msg.splitlines()):
-            msg_image = pygame.font.Font(
-                pygame.font.get_default_font(), 12).render(
-                line, False, (255, 255, 255), (0, 0, 0))
-
-            msgim_center_x, msgim_center_y = msg_image.get_size()
-            msgim_center_x //= 2
-            msgim_center_y //= 2
-
-            self.screen.blit(msg_image, (
-                self.width // 2 - msgim_center_x,
-                self.height // 2 - msgim_center_y + i * 22))
-            pygame.display.update()
-
-    def draw_shape(self, board: Shape):
-        for point, color in board.items():
-            rect = (point.y * self.cell_size, point.x * self.cell_size, self.cell_size, self.cell_size)
-            pygame.draw.rect(self.screen, color, rect)
-
-    def refresh(self):
-        pygame.display.update()
-        self.screen.fill((0, 0, 0))
 
 
 class TetrisApp(object):
@@ -166,7 +24,7 @@ class TetrisApp(object):
         return [[self.board_color for _ in range(self.columns)] for _ in range(self.rows)]
 
     def new_block(self):
-        start_point = Vector(-2, self.columns//2)
+        start_point = Vector(-2, self.columns // 2)
         block = self.block_factory.create()
         block = block.get_moved(start_point)
         if self.is_colliding(block):
