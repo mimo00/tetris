@@ -51,9 +51,9 @@ class TetrisApp(object):
             if not self.is_colliding(new_block):
                 self.block = new_block
 
-    def rotate(self, r=R_CLOCKWISE):
+    def rotate(self):
         if not self.gameover and not self.paused:
-            new_block = self.block.get_rotated(r)
+            new_block = self.block.get_rotated()
             if not self.is_colliding(new_block):
                 self.block = new_block
 
@@ -94,7 +94,7 @@ class TetrisApp(object):
                 elif event.key == pygame.K_DOWN:
                     self.move(DOWN)
                 elif event.key == pygame.K_UP:
-                    self.rotate(R_CLOCKWISE)
+                    self.rotate()
                 elif event.key == pygame.K_p:
                     self.toggle_pause()
                 elif event.key == pygame.K_SPACE:

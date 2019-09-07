@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple, Dict, List
 
 R_CLOCKWISE = ([0, 1], [-1, 0])
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -29,9 +30,10 @@ class Vector:
             return self.x == o.x and self.y == o.y
         return False
 
-    def get_rotated(self, r, pivot):
+    def get_rotated(self, pivot):
+        R = R_CLOCKWISE
         point = self - pivot
-        point = self.transform(r, point)
+        point = self.transform(R, point)
         point = pivot + point
         return point
 
@@ -59,10 +61,10 @@ class Block:
         self.center: Vector = center
         self.color: Color = color
 
-    def get_rotated(self, r=R_CLOCKWISE):
+    def get_rotated(self):
         points = []
         for point in self.points:
-            points.append(point.get_rotated(r, self.center))
+            points.append(point.get_rotated(self.center))
         return Block(points, self.center, self.color)
 
     def get_moved(self, point):
