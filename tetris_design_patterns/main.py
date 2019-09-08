@@ -1,7 +1,8 @@
 import pygame
 import sys
 
-from tetris_design_patterns.core import BLACK, Vector, DOWN, RIGHT, LEFT, Board, Block
+from tetris_design_patterns.core import BLACK, Vector, DOWN, RIGHT, LEFT, Board
+from tetris_design_patterns.factory.core import Block
 from tetris_design_patterns.factory.classic_factory import ClassicTetrisBlockFactory, OBlock
 from tetris_design_patterns.gui import GUI
 
@@ -79,7 +80,6 @@ class GameState(TetrisState):
 
     def new_board(self) -> Board:
         return [[self.board_color for _ in range(self.columns)] for _ in range(self.rows)]
-
 
     def move(self, point):
         new_block = self.block.get_moved(point)
