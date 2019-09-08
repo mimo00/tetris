@@ -98,7 +98,7 @@ class SBlock(Block):
 class IBlock(Block):
     def __init__(self, color=GREEN):
         points = [Vector(0, 0), Vector(1, 0), Vector(2, 0), Vector(3, 0)]
-        center = Vector(1, 1)
+        center = Vector(1, 0)
         super().__init__(points, center, color)
 
 
