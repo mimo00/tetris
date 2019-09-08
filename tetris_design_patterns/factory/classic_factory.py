@@ -25,12 +25,21 @@ class IBlock(Block):
         super().__init__(points, center, color)
 
 
+class OBlock(Block):
+    def __init__(self, color=GREEN):
+        points = [Vector(0, 0), Vector(1, 0), Vector(0, 1), Vector(1, 1)]
+        center = Vector(1, 0)
+        super().__init__(points, center, color)
+
+
 class ClassicTetrisBlockFactory(TetrisBlockFactory):
-    def create(self) -> Block:
-        shape = random.randint(0, 2)
+    def create(self):
+        shape = random.randint(0, 3)
         if shape == 0:
             return TBlock()
         elif shape == 1:
             return SBlock()
         elif shape == 2:
             return IBlock()
+        elif shape == 3:
+            return OBlock()

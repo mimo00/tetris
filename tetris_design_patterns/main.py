@@ -2,7 +2,7 @@ import pygame
 import sys
 
 from tetris_design_patterns.core import BLACK, Vector, DOWN, RIGHT, LEFT, Board, Block
-from tetris_design_patterns.factory.classic_factory import ClassicTetrisBlockFactory
+from tetris_design_patterns.factory.classic_factory import ClassicTetrisBlockFactory, OBlock
 from tetris_design_patterns.gui import GUI
 
 DROP_EVENT_ID = pygame.USEREVENT + 1

@@ -102,6 +102,13 @@ class IBlock(Block):
         super().__init__(points, center, color)
 
 
+class OBlock(Block):
+    def __init__(self, color=GREEN):
+        points = [Vector(0, 0), Vector(1, 0), Vector(0, 1), Vector(1, 1)]
+        center = Vector(1, 0)
+        super().__init__(points, center, color)
+
+
 class GUI:
     def __init__(self, cell_size=20, rows=16, columns=8):
         self.cell_size = cell_size
@@ -159,6 +166,8 @@ class TetrisApp(object):
             block = SBlock()
         elif shape == 2:
             block = IBlock()
+        elif shape == 3:
+            block = OBlock()
         block = block.get_moved(start_point)
         if self.is_colliding(block):
             self.check_game_over()
